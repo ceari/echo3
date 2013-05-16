@@ -21,12 +21,10 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
          * Overriding implementations must invoke.
          */
         processBlur: function(e) {
-            this._focused = false;
-            this._storeSelection();
-            this._storeValue();
+            this.renderBlur();
             return true;
         },
-        
+
         /**
          * Processes a focus event. Notifies application of focus.
          * Overriding implementations must invoke.
@@ -102,6 +100,14 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
     _selectionEnd: 0,
     
     /**
+     * Reference to listener on application component to monitor focused state.
+     * Blurring of focus results in immediate storage of value.
+     * DOM listeners are inadequate.
+     * @type Function
+     */
+    _focusListenerRef: null,
+    
+    /**
      * Renders style information: colors, borders, font, insets, etc.
      * Sets percentWidth flag.
      */
@@ -149,12 +155,17 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
      * Registers event handlers on the text component.
      */
     _addEventHandlers: function() {
+        if (!this._focusListenerRef) {
+            this._focusListenerRef = Core.method(this, this._processComponentFocus);
+            this.component.addListener("focus", this._focusListenerRef);
+            Core.Debug.consoleWrite("AEH");
+        }
         Core.Web.Event.add(this.input, "keydown", Core.method(this, this._processKeyDown), false);
         Core.Web.Event.add(this.input, "click", Core.method(this, this._processClick), false);
         Core.Web.Event.add(this.input, "focus", Core.method(this, this.processFocus), false);
         Core.Web.Event.add(this.input, "blur", Core.method(this, this.processBlur), false);
     },
-    
+
     /**
      * Reduces a percentage width by a number of pixels based on the container size.
      * 
@@ -207,6 +218,15 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
         this.client.application.setFocusedComponent(this.component);
         this._storeSelection();
         return false;
+    },
+
+    /**
+     * Processes a component object focus event.
+     */
+    _processComponentFocus: function(e) {
+        Core.Debug.consoleWrite("PCF");
+        this._storeSelection();
+        this._storeValue(e);
     },
 
     /**
@@ -278,6 +298,13 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
         }
     },
     
+    /** @see Echo.Render.ComponentSync#renderBlur */
+    renderBlur: function() {
+        this._focused = false;
+        this._storeSelection();
+        this._storeValue();
+    },
+    
     /** @see Echo.Render.ComponentSync#renderDisplay */
     renderDisplay: function() {
         var width = this.component.render("width");
@@ -322,6 +349,9 @@ Echo.Sync.TextComponent = Core.extend(Echo.Render.ComponentSync, {
     
     /** @see Echo.Render.ComponentSync#renderDispose */
     renderDispose: function(update) {
+        if (this.component) {
+            this.component.removeListener("focus", this._focusListenerRef);
+        }
         Core.Web.Event.removeAll(this.input);
         this._focused = false;
         this.input = null;

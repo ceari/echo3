@@ -46,7 +46,7 @@ import nextapp.echo.webcontainer.util.XmlRequestParser;
  * state of an application that is sent to the remote client as the request
  * of a synchronization HTTP connection.
  */
-public class InputProcessor {
+class InputProcessor {
     
     static {
         ClientMessage.register("CSync", ComponentInputProcessor.class);

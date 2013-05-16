@@ -513,6 +513,12 @@ Echo.Client = Core.extend({
      * @param e the event
      */
     _processApplicationFocus: function(e) {
+        if (e.oldValue && e.oldValue.peer && e.oldValue.peer.renderBlur) {
+            e.oldValue.peer.renderBlur();
+        }
+        
+        Core.Debug.consoleWrite("PAF, oldValue=" + e.oldValue);
+        
         var focusedComponent = this.application.getFocusedComponent();
         if (focusedComponent && focusedComponent.peer && focusedComponent.peer.renderFocus) {
             focusedComponent.peer.renderFocus();

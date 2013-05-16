@@ -745,6 +745,13 @@ Echo.Render.ComponentSync = Core.extend({
         isChildVisible: null,
         
         /**
+         * (Optional) Invoked when component loses focus.
+         * 
+         * @function
+         */
+        renderFocus: null,
+        
+        /**
          * (Optional) Invoked when component is rendered focused.
          * 
          * @function
