@@ -203,7 +203,7 @@ Echo.Application = Core.extend({
                              }
                           }
                           return false;
-                      }
+                      };
         if (!contains(this._historyListeners, l)) {
             this._historyListeners.push(l);
         }
