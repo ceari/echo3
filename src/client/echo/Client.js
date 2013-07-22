@@ -191,6 +191,18 @@ Echo.Client = Core.extend({
         this._waitIndicator = new Echo.Client.DefaultWaitIndicator();
         this._waitIndicatorRunnable = new Core.Web.Scheduler.MethodRunnable(Core.method(this, this._waitIndicatorActivate), 
                 this._preWaitIndicatorDelay, false);
+
+        /**
+         * Notify registered history change listeners upon the "statechange" event, which is
+         * thrown on every History.pushState call and when the user navigates in his browser.
+         */
+        History.Adapter.bind(window, "statechange", Core.method(this, function() {
+            if (this.application !== null && this.application._historyListeners !== null) {
+                for (var i = 0; i < this.application._historyListeners.length; i++) {
+                    this.application._historyListeners[i](this.application, History.getState());
+                }
+            }
+        }));
     },
     
     $abstract: true,

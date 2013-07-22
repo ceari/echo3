@@ -42,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import nextapp.echo.app.history.HistoryChangeListener;
+import nextapp.echo.app.history.HistoryState;
 import nextapp.echo.app.update.ServerUpdateManager;
 import nextapp.echo.app.update.UpdateManager;
 import nextapp.echo.app.util.Uid;
@@ -63,6 +65,55 @@ public abstract class ApplicationInstance implements Serializable {
     public static final String STYLE_SHEET_CHANGED_PROPERTY = "styleSheet";
     public static final String WINDOWS_CHANGED_PROPERTY = "windows";
     public static final String LAST_ENQUEUE_TASK_PROPERTY = "lastEnqueueTask";
+
+    // Registered history change listeners
+    private Set<HistoryChangeListener> historyChangeListeners;
+
+    // History state to push to the client with the next synchronisation
+    private HistoryState historyState = null;
+
+    public final HistoryState getHistoryState() {
+        return this.historyState;
+    }
+
+    /**
+     * Push (remember) a history state at the browser-side with the next
+     * server-to-client synchronisation.
+     * @param state
+     */
+    public final void pushState(HistoryState state) {
+        this.historyState = state;
+    }
+
+    /**
+     * Add a history change listener that gets notified when the history state
+     * changed in the client's browser (e.g. by using the back/forward buttons)
+     * @param listener
+     */
+    public void registerHistoryChangeListener(HistoryChangeListener listener) {
+        historyChangeListeners.add(listener);
+    }
+
+    /**
+     * Remove a history change listener.
+     * @param listener
+     */
+    public void removeHistoryChangeListener(HistoryChangeListener listener) {
+        historyChangeListeners.remove(listener);
+    }
+
+    /**
+     * Called when the client requests to change the state of the application due to
+     * navigating the browser history. The application developer is responsible for
+     * handling the changed state correctly in their registered listeners.
+     *
+     * @param state the state the application should change to
+     */
+    public void notifyHistoryListeners(HistoryState state) {
+        for (HistoryChangeListener listener: this.historyChangeListeners) {
+            listener.historyChanged(state);
+        }
+    }
     
     /** 
      * A <code>ThreadLocal</code> reference to the 
@@ -222,6 +273,7 @@ public abstract class ApplicationInstance implements Serializable {
         updateManager = new UpdateManager(this);
         renderIdToComponentMap = new HashMap();
         taskQueueMap = new HashMap();
+        historyChangeListeners = new HashSet();
     }
     
     /**

@@ -32,8 +32,15 @@ package nextapp.echo.testapp.interactive;
 import nextapp.echo.app.TaskQueueHandle;
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Window;
+import nextapp.echo.app.Button;
+import nextapp.echo.app.history.HistoryChangeListener;
+import nextapp.echo.app.history.HistoryState;
 import nextapp.echo.webcontainer.ClientConfiguration;
 import nextapp.echo.webcontainer.ContainerContext;
+import nextapp.echo.webcontainer.WebContainerServlet;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * Interactive Test Application Instance.
@@ -123,13 +130,16 @@ public class InteractiveApp extends ApplicationInstance {
         }
         console.writeMessage(message);
     }
+
+    private TestPane testPane;
     
     /**
      * Displays a <code>TestPane</code> from which the user may select an
      * interactive test to run.
      */
     public void displayTestPane() {
-        mainWindow.setContent(new TestPane());
+        testPane = new TestPane();
+        mainWindow.setContent(testPane);
     }
     
     /**
@@ -195,6 +205,32 @@ public class InteractiveApp extends ApplicationInstance {
                 "An application error has occurred.  Please contact the system administrator and " +
                 "provide any information shown below.");
         cc.setClientConfiguration(clientConfiguration);
+
+        this.registerHistoryChangeListener(new HistoryChangeListener() {
+            @Override
+            public void historyChanged(HistoryState newState) {
+                // TODO: parse the URL into a relative URL before notification
+                if (newState == null) return;
+                System.out.println("handleHistoryChange: " + newState.getUrl());
+                String absoluteURL = null;
+                try {
+                    absoluteURL = URLDecoder.decode(newState.getUrl(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String relativeURL = absoluteURL.substring(WebContainerServlet.getActiveConnection().getRequest().getRequestURL().toString().length());
+
+                // Actual application state handling. Simply load the test that corresponds to the relative URL
+                // running the action handler of the appropriate button.
+                displayTestPane();
+                Button b = testPane.getTestButton(relativeURL);
+                if (b != null) {
+                    b.doAction();
+                    getApp().setFocusedComponent(b);
+                }
+
+            }
+            });
         
         return mainWindow;
     }

@@ -176,6 +176,24 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         this._pending_events = [];
         this._asyncUpdatesHandler = new Core.Web.Scheduler.MethodRunnable(Core.method(this, this._performAsyncUpdates), 250, false);
     },
+
+    /**
+     * History handler that gets called when the browser history changes (back/forward navigation)
+     *
+     * @param application
+     * @param state
+     */
+    historyHandler: function(application, state) {
+        if (this._processServerMessage) {
+            // do nothing when processing a server message
+        } else {
+            Core.Debug.consoleWrite("RemoteClient.js::historyHandler() " + state.url + " -> Sending history change notification to server");
+            this._syncRequested = true;
+            this._clientMessage._historyChange = true;
+            this._clientMessage.setEvent("CVirtualHistoryComponent", "historyChange");
+            Core.Web.Scheduler.run(Core.method(this, this.sync));
+        }
+    },
     
     /**
      * Adds a listener for an arbitrary event type to a component.
@@ -402,6 +420,9 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         // Register an update listener to receive notification of user actions such that they
         // may be remarked in the outgoing ClientMessage.
         application.addListener("componentUpdate", Core.method(this, this._processClientUpdate));
+
+        // Register the historyHandler function as listener to browser history change events
+        application.registerHistoryListener(Core.method(this, this.historyHandler));
         
         // Perform general purpose client configuration.
         this.configure(application, domainElement);
@@ -991,6 +1012,11 @@ Echo.RemoteClient.ClientMessage = Core.extend({
      * @type Echo.RemoteClient
      */
     _client: null,
+
+    /**
+     * If the history changed, set this to true and the state will be sent to the server.
+     */
+    _historyChange: null,
     
     /**
      * Mapping between component ids and updated property values.
@@ -1040,6 +1066,7 @@ Echo.RemoteClient.ClientMessage = Core.extend({
             this._document.documentElement.setAttribute("w", Echo.Client.windowId);
             this._document.documentElement.setAttribute("ii", initId);
             this._renderClientProperties();
+            this._renderCFocus(); // With history state handling focus might have to be set initially as well
         }
     },
     
@@ -1061,7 +1088,7 @@ Echo.RemoteClient.ClientMessage = Core.extend({
             this._document.documentElement.appendChild(cFocusElement);
         }
     },
-    
+
     /**
      * Renders component hierarchy state change information to the client message DOM.
      * This information is retrieved from instance variables of the client message object,
@@ -1076,6 +1103,14 @@ Echo.RemoteClient.ClientMessage = Core.extend({
             var eElement = this._document.createElement("e");
             eElement.setAttribute("t", this._eventType);
             eElement.setAttribute("i", this._eventComponentId);
+            if (this._eventType == "historyChange" && this._historyChange) {
+                // Include the URL in the message if the event is a history change event
+                this._historyChange = false;
+                var state = History.getState();
+                if (state) {
+                    eElement.setAttribute("url", state.url);
+                }
+            }
             if (this._eventData != null) {
                 Echo.Serial.storeProperty(this._client, eElement, this._eventData);
             }
@@ -1500,6 +1535,28 @@ Echo.RemoteClient.ComponentFocusProcessor = Core.extend(Echo.RemoteClient.Direct
                 if (newComponent != this.client._clientFocusedComponent) {
                     this.client._serverFocusedComponent = newComponent;
                 }
+            }
+            element = element.nextSibling;
+        }
+    }
+});
+
+/**
+ * ServerMessage directive processor for history modifications
+ */
+Echo.RemoteClient.HistoryProcessor = Core.extend(Echo.RemoteClient.DirectiveProcessor, {
+
+    $load: function() {
+        Echo.RemoteClient.ServerMessage.addProcessor("CHistory", this);
+    },
+
+    /** @see #Echo.RemoteClient.DirectiveProcessor#process */
+    process: function(dirElement) {
+        var element = dirElement.firstChild;
+        while (element) {
+            if (element.nodeType == 1 && element.nodeName == "pushState") {
+                Core.Debug.consoleWrite("HistoryProcessor::process() Received ServerMessage with pushState");
+                this.client.application.pushState(null, element.getAttribute("title"), element.getAttribute("url"));
             }
             element = element.nextSibling;
         }

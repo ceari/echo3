@@ -51,7 +51,8 @@ public class BootService {
         List resourceList = new ArrayList();
         resourceList.add(JS_RESOURCE_PATH + "Core.js");
         resourceList.add(JS_RESOURCE_PATH + "Core.Web.js");
-        resourceList.add(JS_RESOURCE_PATH + "Application.js"); 
+        resourceList.add(JS_RESOURCE_PATH + "native.history.js");
+        resourceList.add(JS_RESOURCE_PATH + "Application.js");
         resourceList.add(JS_RESOURCE_PATH + "Render.js");
         resourceList.add(JS_RESOURCE_PATH + "Sync.js");
         resourceList.add(JS_RESOURCE_PATH + "Serial.js");

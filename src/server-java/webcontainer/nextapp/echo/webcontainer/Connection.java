@@ -56,7 +56,7 @@ public class Connection extends AbstractConnection {
     Connection(WebContainerServlet servlet, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         super(servlet, request);
         this.response = response;
-        
+
         // Configure connection for Multipart Request if required.
         String contentType = request.getContentType();
         if (contentType != null && contentType.startsWith(ContentType.MULTIPART_FORM_DATA.getMimeType())) {

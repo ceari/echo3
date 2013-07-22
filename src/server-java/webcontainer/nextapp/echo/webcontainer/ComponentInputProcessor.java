@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import nextapp.echo.app.Component;
+import nextapp.echo.app.history.HistoryState;
 import nextapp.echo.app.serial.PropertyPeerFactory;
 import nextapp.echo.app.serial.SerialException;
 import nextapp.echo.app.serial.SerialPropertyPeer;
@@ -59,6 +60,8 @@ implements ClientMessage.Processor {
     private String eventComponentId;
     private Element eventElement;
     private String eventType;
+
+    private static final String historyChangeEventType = "historyChange";
     
     /**
      * Returns the event element of the event that resulted in the client-server interaction.
@@ -205,26 +208,30 @@ implements ClientMessage.Processor {
         
         // Process event which caused client-server synchronization request, if applicable.
         if (getEvent() != null) {
-            Component component = userInstance.getComponentByClientRenderId(getEventComponentId());
-            if( component == null ) {
-                return;
-            }
-            ComponentSynchronizePeer componentPeer = SynchronizePeerFactory.getPeerForComponent(component.getClass());
-            Class eventDataClass = componentPeer.getEventDataClass(getEventType());
-            if (eventDataClass == null) {
-                componentPeer.processEvent(context, component, getEventType(), null);
+            if (historyChangeEventType.equals(getEventType())) {
+                userInstance.getApplicationInstance().notifyHistoryListeners(new HistoryState(getEvent().getAttribute("url")));
             } else {
-                SerialPropertyPeer propertyPeer = propertyPeerFactory.getPeerForProperty(eventDataClass);
-                if (propertyPeer == null) {
-                    Log.log("No peer available for event data for event type: " + getEventType() 
-                            + " of class: " + eventDataClass);
+                Component component = userInstance.getComponentByClientRenderId(getEventComponentId());
+                if( component == null ) {
+                    return;
                 }
-                try {
-                    Object eventData = propertyPeer.toProperty(context, component.getClass(), getEvent());
-                    componentPeer.processEvent(context, component, getEventType(), eventData);
-                } catch (SerialException ex) {
-                    throw new SynchronizationException(
-                            "Unable to store event data for event type: " + getEventType() + " of class: " + eventDataClass, ex);
+                ComponentSynchronizePeer componentPeer = SynchronizePeerFactory.getPeerForComponent(component.getClass());
+                Class eventDataClass = componentPeer.getEventDataClass(getEventType());
+                if (eventDataClass == null) {
+                    componentPeer.processEvent(context, component, getEventType(), null);
+                } else {
+                    SerialPropertyPeer propertyPeer = propertyPeerFactory.getPeerForProperty(eventDataClass);
+                    if (propertyPeer == null) {
+                        Log.log("No peer available for event data for event type: " + getEventType()
+                                + " of class: " + eventDataClass);
+                    }
+                    try {
+                        Object eventData = propertyPeer.toProperty(context, component.getClass(), getEvent());
+                        componentPeer.processEvent(context, component, getEventType(), eventData);
+                    } catch (SerialException ex) {
+                        throw new SynchronizationException(
+                                "Unable to store event data for event type: " + getEventType() + " of class: " + eventDataClass, ex);
+                    }
                 }
             }
         }

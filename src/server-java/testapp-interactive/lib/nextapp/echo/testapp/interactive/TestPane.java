@@ -35,6 +35,7 @@ import java.io.ObjectOutputStream;
 
 import nextapp.echo.app.Button;
 import nextapp.echo.app.Column;
+import nextapp.echo.app.history.HistoryState;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.ContentPane;
 import nextapp.echo.app.Extent;
@@ -64,6 +65,10 @@ public class TestPane extends ContentPane {
                 Button button = (Button) e.getSource();
                 button.setStyleName("Selected");
                 activeButton = button;
+
+                // Tell browser to remember this test pane as history state
+                // Use the button text as uniquely identifying URL
+                getApplicationInstance().pushState(new HistoryState("Test - " + activeButton.getText(), activeButton.getText()));
                 
                 Class screenClass = getScreenClass(e.getActionCommand());
                 Component content = (Component) screenClass.newInstance();
@@ -82,6 +87,15 @@ public class TestPane extends ContentPane {
     private SplitPane horizontalPane;
     
     private Column testLaunchButtonsColumn;
+
+    public Button getTestButton(String buttonText) {
+        for (Component c: testLaunchButtonsColumn.getComponents()) {
+            if (c instanceof Button) {
+                if (((Button)c).getText().equals(buttonText)) return (Button)c;
+            }
+        }
+        return null;
+    }
     
     public TestPane() {
         super();

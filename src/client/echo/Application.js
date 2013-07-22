@@ -87,6 +87,9 @@ Echo.Application = Core.extend({
      * @type Core.ListenerList 
      */
     _listenerList: null,
+
+
+    _historyListeners: null,
     
     /** 
      * Default application locale.
@@ -180,6 +183,30 @@ Echo.Application = Core.extend({
      */ 
     doInit: function() {
         this.init();
+    },
+
+    pushState: function(stateData, title, url) {
+        Core.Debug.consoleWrite("Application.js::pushState(url=" + url + " title=" + title + " data="+JSON.stringify(stateData) +")");
+        History.pushState(stateData, title, url);
+    },
+
+    registerHistoryListener: function(l) {
+        if (!this._historyListeners) {
+            this._historyListeners = [];
+        }
+
+        var contains = function(a, obj) {
+                          var i = a.length;
+                          while (i--) {
+                             if (a[i] === obj) {
+                                 return true;
+                             }
+                          }
+                          return false;
+                      }
+        if (!contains(this._historyListeners, l)) {
+            this._historyListeners.push(l);
+        }
     },
     
     /**

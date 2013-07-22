@@ -5,6 +5,7 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="testapp-interactive" />
+          <element id="module-output" name="client" />
         </element>
         <element id="directory" name="lib">
           <element id="archive" name="echo-app.jar">
@@ -18,6 +19,7 @@
                   <element id="directory" name="resource">
                     <element id="dir-copy" path="$PROJECT_DIR$/src/client/corejs" />
                     <element id="dir-copy" path="$PROJECT_DIR$/src/client/echo" />
+                    <element id="dir-copy" path="$PROJECT_DIR$/src/client/history" />
                   </element>
                 </element>
               </element>

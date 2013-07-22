@@ -44,6 +44,7 @@ import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Command;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.ContentPane;
+import nextapp.echo.app.history.HistoryState;
 import nextapp.echo.app.Style;
 import nextapp.echo.app.StyleSheet;
 import nextapp.echo.app.Window;
@@ -170,6 +171,7 @@ class OutputProcessor {
             }
             renderCommands();
             renderFocus();
+            renderHistory();
             renderAsyncState();
         } catch (SerialException ex) {
             throw new SynchronizationException("Cannot serialize server state.", ex);
@@ -866,6 +868,16 @@ class OutputProcessor {
             Element focusElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CFocus", "focus");
             focusElement.setAttribute("i", userInstance.getClientRenderId(focusedComponent));
         }
+    }
+
+    private void renderHistory() {
+        HistoryState state = userInstance.getApplicationInstance().getHistoryState();
+        if (state != null) {
+            Element historyElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CHistory", "pushState");
+            historyElement.setAttribute("url", state.getUrl());
+            historyElement.setAttribute("title", state.getTitle());
+        }
+        userInstance.getApplicationInstance().pushState(null); // Clear state for next update
     }
     
     /**

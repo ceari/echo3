@@ -6,6 +6,14 @@ init = function() {
     var client = new Echo.FreeClient(app, document.getElementById("rootArea"));
     client.loadStyleSheet("Default.stylesheet.xml");
     client.init();
+
+    app.registerHistoryListener(app.loadState);
+
+    Core.Debug.consoleWrite("Initial load state: url=" + History.getState().url + " title=" + JSON.stringify(History.getState().title) + " " + JSON.stringify(History.getState().data));
+    if (History.getState().data.spacing) {
+        var comp = application.getComponentByRenderId("myColumn");
+        comp.set("cellSpacing", state.data.spacing);
+    }
 };
 
 TestApp = Core.extend(Echo.Application, {
@@ -30,6 +38,12 @@ TestApp = Core.extend(Echo.Application, {
         testScreen.addTest("ButtonAlignment");
         testScreen.addTest("List");
         this.rootComponent.add(testScreen);
+    },
+
+    loadState: function(application, state) {
+        Core.Debug.consoleWrite("loadState: url=" + state.url + " title=" + state.title + " state=" + JSON.stringify(state.data));
+        var comp = application.getComponentByRenderId("myColumn");
+        comp.set("cellSpacing", state.data.spacing);
     }
 });
 
@@ -136,6 +150,7 @@ TestApp.Tests.Column = Core.extend(TestApp.TestPane, {
                 })
             ]
         });
+        this.column.renderId = "myColumn";
         this.content.add(this.column);
 
         this.addTestButton("CellSpacing=0", Core.method(this, this._cellSpacing0));
@@ -165,14 +180,17 @@ TestApp.Tests.Column = Core.extend(TestApp.TestPane, {
     },
 
     _cellSpacing0: function() {
+        this.application.pushState({spacing: 0}, "CellSpacing=0", "?cellspacing0");
         this.column.set("cellSpacing", 0);
     },
 
     _cellSpacing1: function() {
+        this.application.pushState({spacing: 1}, "CellSpacing=1", "?cellspacing1");
         this.column.set("cellSpacing", 1);
     },
 
     _cellSpacing5: function() {
+       this.application.pushState({spacing: 5}, "CellSpacing=5", "?cellspacing5");
        this.column.set("cellSpacing", 5);
     },
 

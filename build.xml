@@ -39,6 +39,7 @@
         <include name="**/*properties"/>
         <include name="**/*html"/>
         <include name="**/*js"/>
+        <include name="**/*font*"/>
         <include name="**/*gif"/>
         <include name="**/*jpg"/>
         <include name="**/*png"/>
@@ -107,6 +108,9 @@
             <fileset dir="${dir.src.client.echo}">
                 <include name="**/Sync*.js"/>
             </fileset>
+            <fileset dir="${dir.src.client.history}">
+                <include name="**/native.history.js"/>
+            </fileset>
         </concat>
     </target>
 
@@ -115,6 +119,7 @@
         <copy todir="${dir.dist.client.testapp}">
             <fileset dir="${dir.src.client.corejs}"/>
             <fileset dir="${dir.src.client.echo}"/>
+            <fileset dir="${dir.src.client.history}"/>
             <fileset dir="${dir.src.client.test-ia}"/>
         </copy>
 
@@ -273,6 +278,9 @@
                 <patternset refid="fileset.resources"/>
             </fileset>
             <fileset dir="${dir.src.client.echo}">
+                <patternset refid="fileset.resources"/>
+            </fileset>
+            <fileset dir="${dir.src.client.history}">
                 <patternset refid="fileset.resources"/>
             </fileset>
         </copy>
