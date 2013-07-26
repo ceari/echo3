@@ -209,21 +209,11 @@ public class InteractiveApp extends ApplicationInstance {
         this.registerHistoryChangeListener(new HistoryChangeListener() {
             @Override
             public void historyChanged(HistoryState newState) {
-                // TODO: parse the URL into a relative URL before notification
-                if (newState == null) return;
-                System.out.println("handleHistoryChange: " + newState.getUrl());
-                String absoluteURL = null;
-                try {
-                    absoluteURL = URLDecoder.decode(newState.getUrl(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                String relativeURL = absoluteURL.substring(WebContainerServlet.getActiveConnection().getRequest().getRequestURL().toString().length());
-
                 // Actual application state handling. Simply load the test that corresponds to the relative URL
                 // running the action handler of the appropriate button.
+                System.out.println("historyChanged url: " + newState.getUrl());
                 displayTestPane();
-                Button b = testPane.getTestButton(relativeURL);
+                Button b = testPane.getTestButton(newState.getUrl());
                 if (b != null) {
                     b.doAction();
                     getApp().setFocusedComponent(b);

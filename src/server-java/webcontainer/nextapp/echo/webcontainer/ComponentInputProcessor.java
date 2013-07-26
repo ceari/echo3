@@ -30,6 +30,8 @@
 package nextapp.echo.webcontainer;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -209,7 +211,15 @@ implements ClientMessage.Processor {
         // Process event which caused client-server synchronization request, if applicable.
         if (getEvent() != null) {
             if (historyChangeEventType.equals(getEventType())) {
-                userInstance.getApplicationInstance().notifyHistoryListeners(new HistoryState(getEvent().getAttribute("url")));
+                String absoluteURL = null;
+                try {
+                    absoluteURL = URLDecoder.decode(getEvent().getAttribute("url"), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new SynchronizationException("Couldn't decode received history change URL using UTF-8 ", e);
+                }
+                String relativeURL = absoluteURL.substring(WebContainerServlet.getActiveConnection().getRequest().getRequestURL().toString().length());
+
+                userInstance.getApplicationInstance().notifyHistoryListeners(new HistoryState(relativeURL));
             } else {
                 Component component = userInstance.getComponentByClientRenderId(getEventComponentId());
                 if( component == null ) {
