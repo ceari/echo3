@@ -190,6 +190,10 @@ Echo.Application = Core.extend({
         History.pushState(stateData, title, url);
     },
 
+    replaceState: function(stateData, title, url) {
+        History.replaceState(stateData, title, url);
+    },
+
     registerHistoryListener: function(l) {
         if (!this._historyListeners) {
             this._historyListeners = [];

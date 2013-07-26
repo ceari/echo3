@@ -71,9 +71,14 @@ public abstract class ApplicationInstance implements Serializable {
 
     // History state to push to the client with the next synchronisation
     private HistoryState historyState = null;
+    private boolean replaceHistoryState = false;
 
     public final HistoryState getHistoryState() {
         return this.historyState;
+    }
+
+    public boolean isReplaceHistoryState() {
+        return this.replaceHistoryState;
     }
 
     /**
@@ -83,6 +88,17 @@ public abstract class ApplicationInstance implements Serializable {
      */
     public final void pushState(HistoryState state) {
         this.historyState = state;
+        this.replaceHistoryState = false;
+    }
+
+    /**
+     * Replace (remember) a history state at the browser-side with the next
+     * server-to-client synchronisation. Contrary to pushState(), replaceState
+     * replaces the current browser state
+     */
+    public final void replaceState(HistoryState state) {
+        this.historyState = state;
+        this.replaceHistoryState = true;
     }
 
     /**

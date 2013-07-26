@@ -1557,6 +1557,9 @@ Echo.RemoteClient.HistoryProcessor = Core.extend(Echo.RemoteClient.DirectiveProc
             if (element.nodeType == 1 && element.nodeName == "pushState") {
                 Core.Debug.consoleWrite("HistoryProcessor::process() Received ServerMessage with pushState");
                 this.client.application.pushState(null, element.getAttribute("title"), element.getAttribute("url"));
+            } else if (element.nodeType == 1 && element.nodeName == "replaceState") {
+                Core.Debug.consoleWrite("HistoryProcessor::process() Received ServerMessage with replaceState");
+                this.client.application.replaceState(null, element.getAttribute("title"), element.getAttribute("url"));
             }
             element = element.nextSibling;
         }

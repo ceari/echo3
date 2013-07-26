@@ -873,8 +873,9 @@ class OutputProcessor {
     private void renderHistory() {
         HistoryState state = userInstance.getApplicationInstance().getHistoryState();
         if (state != null) {
-            Element historyElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CHistory", "pushState");
-            historyElement.setAttribute("url", state.getUrl());
+            boolean isReplaceState = userInstance.getApplicationInstance().isReplaceHistoryState();
+            Element historyElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CHistory", isReplaceState ? "replaceState" : "pushState");
+            historyElement.setAttribute("url", WebContainerServlet.getActiveConnection().getServlet().getServletContext().getContextPath() + state.getUrl());
             historyElement.setAttribute("title", state.getTitle());
         }
         userInstance.getApplicationInstance().pushState(null); // Clear state for next update

@@ -68,7 +68,8 @@ public class TestPane extends ContentPane {
 
                 // Tell browser to remember this test pane as history state
                 // Use the button text as uniquely identifying URL
-                getApplicationInstance().pushState(new HistoryState("Test - " + activeButton.getText(), activeButton.getText()));
+                getApplicationInstance().pushState(new HistoryState("Test - " + activeButton.getText(), "/app/" + activeButton.getText()));
+
                 
                 Class screenClass = getScreenClass(e.getActionCommand());
                 Component content = (Component) screenClass.newInstance();
