@@ -212,12 +212,16 @@ public class InteractiveApp extends ApplicationInstance {
                 // Actual application state handling. Simply load the test that corresponds to the relative URL
                 // running the action handler of the appropriate button.
                 System.out.println("historyChanged url: " + newState.getUrl());
-                displayTestPane();
-                Button b = testPane.getTestButton(newState.getUrl());
-                if (b != null) {
-                    b.doAction();
-                    getApp().setFocusedComponent(b);
-                }
+                if ("/".equals(newState.getUrl())) {
+                    displayTestPane();
+                } else if (newState.getUrl().startsWith("/")) {
+                    displayTestPane();
+                    Button b = testPane.getTestButton(newState.getUrl().substring(1));
+                    if (b != null) {
+                        b.doAction();
+                        getApp().setFocusedComponent(b);
+                    } // else not found message
+                } // else unknown URL / 404
 
             }
             });

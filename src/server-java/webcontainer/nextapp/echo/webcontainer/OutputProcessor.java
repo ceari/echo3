@@ -875,7 +875,13 @@ class OutputProcessor {
         if (state != null) {
             boolean isReplaceState = userInstance.getApplicationInstance().isReplaceHistoryState();
             Element historyElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CHistory", isReplaceState ? "replaceState" : "pushState");
-            historyElement.setAttribute("url", WebContainerServlet.getActiveConnection().getServlet().getServletContext().getContextPath() + state.getUrl());
+            // Make all URLs relative to "servlet context path" + "servlet path"
+            if (state.getUrl().startsWith("/")) {
+                historyElement.setAttribute("url", WebContainerServlet.getActiveConnection().getServlet().getServletContext().getContextPath() + WebContainerServlet.getActiveConnection().getRequest().getServletPath() + state.getUrl());
+            } else {
+                historyElement.setAttribute("url", state.getUrl());
+            }
+
             historyElement.setAttribute("title", state.getTitle());
         }
         userInstance.getApplicationInstance().pushState(null); // Clear state for next update

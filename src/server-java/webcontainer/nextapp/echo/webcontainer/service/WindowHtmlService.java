@@ -171,7 +171,7 @@ implements Service {
         Element bodyElement = document.createElement("body");
         bodyElement.setAttribute("id", "body");
         bodyElement.setAttribute("onload", "Echo.Boot.boot('" + userInstanceContainer.getServletUri() + "', '" + 
-                userInstanceContainer.createInitId(conn) + "', " + debug + ", '" + conn.getRequest().getPathInfo().substring(1) + "');");
+                userInstanceContainer.createInitId(conn) + "', " + debug + ", '" + conn.getRequest().getPathInfo() + "');");
         bodyElement.setAttribute("style",
                 "height:100%;width:100%;margin:0px;padding:0px;" +
                 "font-family:verdana, arial, helvetica, sans-serif;font-size:10pt");

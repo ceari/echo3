@@ -197,12 +197,30 @@ Echo.Client = Core.extend({
          * thrown on every History.pushState call and when the user navigates in his browser.
          */
         History.Adapter.bind(window, "statechange", Core.method(this, function() {
+            if (History.Adapter.applicationTriggered) {
+                // Ignore state change events triggered by push/replace.
+                History.Adapter.applicationTriggered = false;
+                return;
+            }
             if (this.application !== null && this.application._historyListeners !== null) {
                 for (var i = 0; i < this.application._historyListeners.length; i++) {
                     this.application._historyListeners[i](this.application, History.getState());
                 }
             }
         }));
+
+        // Register new push/replace state functions that set the application-triggered flag
+        History.pushStateOrig = History.pushState;
+        History.pushState = function(state, title, url) {
+            History.Adapter.applicationTriggered = true;
+            History.pushStateOrig(state, title, url);
+        };
+        History.replaceStateOrig = History.replaceState;
+        History.replaceState = function(state, title, url) {
+            History.Adapter.applicationTriggered = true;
+            History.replaceStateOrig(state, title, url);
+        };
+
     },
     
     $abstract: true,

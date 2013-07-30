@@ -10,9 +10,8 @@ init = function() {
     app.registerHistoryListener(app.loadState);
 
     Core.Debug.consoleWrite("Initial load state: url=" + History.getState().url + " title=" + JSON.stringify(History.getState().title) + " " + JSON.stringify(History.getState().data));
-    if (History.getState().data.spacing) {
-        var comp = application.getComponentByRenderId("myColumn");
-        comp.set("cellSpacing", state.data.spacing);
+    if (History.getState().url) {
+        // TODO: parse URL and set state
     }
 };
 
@@ -41,7 +40,7 @@ TestApp = Core.extend(Echo.Application, {
     },
 
     loadState: function(application, state) {
-        Core.Debug.consoleWrite("loadState: url=" + state.url + " title=" + state.title + " state=" + JSON.stringify(state.data));
+        Core.Debug.consoleWrite("loadState: url=" + state.url + " title=" + state.title + " state=" + JSON.stringify(state.data) + " " + state.internal);
         var comp = application.getComponentByRenderId("myColumn");
         comp.set("cellSpacing", state.data.spacing);
     }
@@ -180,17 +179,17 @@ TestApp.Tests.Column = Core.extend(TestApp.TestPane, {
     },
 
     _cellSpacing0: function() {
-        this.application.pushState({spacing: 0}, "CellSpacing=0", "?cellspacing0");
+        this.application.pushState({spacing: 0}, "CellSpacing=0", "?cellspacing=0");
         this.column.set("cellSpacing", 0);
     },
 
     _cellSpacing1: function() {
-        this.application.pushState({spacing: 1}, "CellSpacing=1", "?cellspacing1");
+        this.application.pushState({spacing: 1}, "CellSpacing=1", "?cellspacing=1");
         this.column.set("cellSpacing", 1);
     },
 
     _cellSpacing5: function() {
-       this.application.pushState({spacing: 5}, "CellSpacing=5", "?cellspacing5");
+       this.application.pushState({spacing: 5}, "CellSpacing=5", "?cellspacing=5");
        this.column.set("cellSpacing", 5);
     },
 

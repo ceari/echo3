@@ -212,14 +212,14 @@ implements ClientMessage.Processor {
         if (getEvent() != null) {
             if (historyChangeEventType.equals(getEventType())) {
                 String absoluteURL = null;
-                String requestURL = null;
+                String relativeURL = "";
                 try {
                     absoluteURL = URLDecoder.decode(getEvent().getAttribute("url"), "UTF-8");
-                    requestURL = URLDecoder.decode(WebContainerServlet.getActiveConnection().getRequest().getRequestURL().toString(), "UTF-8");
+                    String servletBasePath = WebContainerServlet.getActiveConnection().getServlet().getServletContext().getContextPath() + WebContainerServlet.getActiveConnection().getRequest().getServletPath();
+                    relativeURL = absoluteURL.substring(absoluteURL.indexOf(servletBasePath) + servletBasePath.length());
                 } catch (UnsupportedEncodingException e) {
                     throw new SynchronizationException("Couldn't decode URL using UTF-8 ", e);
                 }
-                String relativeURL = absoluteURL.substring(requestURL.length());
                 userInstance.getApplicationInstance().notifyHistoryListeners(new HistoryState(relativeURL));
             } else {
                 Component component = userInstance.getComponentByClientRenderId(getEventComponentId());
