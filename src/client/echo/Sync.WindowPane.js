@@ -669,6 +669,7 @@ Echo.Sync.WindowPane = Core.extend(Echo.Render.ComponentSync, {
         var radius = this.component.render("radius");
         this._div = Echo.Sync.FillImageBorder.renderContainer(border, { absolute: true, radius: radius});
         this._div.id = this.component.renderId;
+        this._div.className = this.component.render("className");
         this._div.tabIndex = "0";
         this._div.style.outlineStyle = "none";
         //this._div.style.overflow = "hidden";

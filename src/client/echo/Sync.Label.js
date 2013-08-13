@@ -83,6 +83,7 @@ Echo.Sync.Label = Core.extend(Echo.Render.ComponentSync, {
                 tct.tdElements[1].appendChild(img);
                 this._node = tct.tableElement;
                 this._node.id = this.component.renderId;
+                this._node.className = this.component.render("className");
                 Echo.Sync.renderComponentDefaults(this.component, this._node);
                 this._node.style.borderCollapse = "separate";  //otherwise corner radius wouldn't work
             } else {
@@ -96,6 +97,7 @@ Echo.Sync.Label = Core.extend(Echo.Render.ComponentSync, {
                 } else {
                     this._node = document.createElement("span");
                     this._node.id = this.component.renderId;
+                    this._node.className = this.component.render("className");
                     if (formatWhitespace) {
                         this._formatWhitespace(text, this._node);
                     } else {
@@ -112,6 +114,7 @@ Echo.Sync.Label = Core.extend(Echo.Render.ComponentSync, {
             Echo.Sync.ImageReference.renderImg(icon, img);
             this._node = document.createElement("div");
             this._node.id = this.component.renderId;
+            this._node.className = this.component.render("className");
             this._node.style.display = "table";
             this._node.appendChild(img);
             Echo.Sync.Color.render(this.component.render("background"), this._node, "backgroundColor");
@@ -120,6 +123,7 @@ Echo.Sync.Label = Core.extend(Echo.Render.ComponentSync, {
             if (this.client.designMode) {
                 this._node = document.createElement("span");
                 this._node.id = this.component.renderId;
+                this._node.className = this.component.render("className");
             } else {
                 this._node = null;
             }

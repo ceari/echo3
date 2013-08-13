@@ -195,6 +195,7 @@ implements RenderIdSupport, Serializable {
     public static final String PROPERTY_BACKGROUND = "background";
     public static final String PROPERTY_FONT = "font";
     public static final String PROPERTY_FOREGROUND = "foreground";
+    public static final String PROPERTY_CLASS_NAME = "className";
     public static final String PROPERTY_LAYOUT_DATA = "layoutData";
     
     /**
@@ -557,6 +558,16 @@ implements RenderIdSupport, Serializable {
      */
     public Color getBackground() {
         return (Color) localStyle.get(PROPERTY_BACKGROUND);
+    }
+
+    /**
+     * Return the DOM class attribute of the component. The class name can be referenced
+     * in custom CSS to perform additional styling beyond the builtin style properties of components.
+     *
+     * @return the class name
+     */
+    public String getClassName() {
+        return (String) localStyle.get(PROPERTY_CLASS_NAME);
     }
     
     /**
@@ -1397,6 +1408,16 @@ implements RenderIdSupport, Serializable {
      */
     public void setBackground(Color newValue) {
         set(PROPERTY_BACKGROUND, newValue);
+    }
+
+    /**
+     * Set the DOM class attribute of the component. The class name can be referenced
+     * in custom CSS to perform additional styling beyond the builtin style properties of components.
+     *
+     * @param className the new class name
+     */
+    public void setClassName(String className) {
+        set(PROPERTY_CLASS_NAME, className);
     }
     
     /**

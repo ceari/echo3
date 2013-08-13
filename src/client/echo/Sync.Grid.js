@@ -571,6 +571,7 @@ Echo.Sync.Grid = Core.extend(Echo.Render.ComponentSync, {
         
         this._div = Echo.Sync.Grid._prototypeTable.cloneNode(true);
         this._div.id = this.component.renderId;
+        this._div.className = this.component.render("className");
         
         var table = this._div.firstChild;
         

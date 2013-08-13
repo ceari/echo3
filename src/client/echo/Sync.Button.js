@@ -321,6 +321,7 @@ Echo.Sync.Button = Core.extend(Echo.Render.ComponentSync, {
         
         this.div = Echo.Sync.Button._prototypeButton.cloneNode(false); 
         this.div.id = this.component.renderId;
+        this.div.className = this.component.render("className");
 
         Echo.Sync.LayoutDirection.render(this.component.getLayoutDirection(), this.div);
         if (this.enabled) {

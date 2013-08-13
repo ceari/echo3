@@ -677,6 +677,7 @@ Echo.Sync.SplitPane = Core.extend(Echo.Render.ComponentSync, {
     
         this._splitPaneDiv = document.createElement("div");
         this._splitPaneDiv.id = this.component.renderId;
+        this._splitPaneDiv.className = this.component.render("className");
         this._splitPaneDiv.style.cssText = "position:absolute;overflow:visible;top:0;left:0;right:0;bottom:0;";
         
         Echo.Sync.renderComponentDefaults(this.component, this._splitPaneDiv);

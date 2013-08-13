@@ -135,6 +135,7 @@ Echo.Sync.ListComponent = Core.extend(Echo.Render.ComponentSync, {
         
         this._element = document.createElement("select");
         this._element.id = this.component.renderId;
+        this._element.className = this.component.render("className");
         this._element.size = this.listBox ? 6 : 1;
 
         if (!this._enabled) {
