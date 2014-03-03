@@ -1065,9 +1065,15 @@ Core.Web.Event = {
          * @see Core.Web.Event.Selection#enable
          */
         disable: function(element) {
-            Core.Web.Event.add(element, "mousedown", Core.Web.Event.Selection._disposeEvent, false);
             if (Core.Web.Env.PROPRIETARY_EVENT_SELECT_START_SUPPORTED) {
                 Core.Web.Event.add(element, "selectstart", Core.Web.Event.Selection._disposeEvent, false);
+            } else {
+                element.style['WebkitTouchCallout'] = 'none';
+                element.style['WebkitUserSelect'] = 'none';
+                element.style['KhtmlUserSelect'] = 'none';
+                element.style['MozUserSelect'] = 'none';
+                element.style['MsUserSelect'] = 'none';
+                element.style['UserSelect'] = 'none';
             }
         },
         
@@ -1087,9 +1093,15 @@ Core.Web.Event = {
          * @see Core.Web.Event.Selection#enable
          */
         enable: function(element) {
-            Core.Web.Event.remove(element, "mousedown", Core.Web.Event.Selection._disposeEvent, false);
             if (Core.Web.Env.PROPRIETARY_EVENT_SELECT_START_SUPPORTED) {
                 Core.Web.Event.remove(element, "selectstart", Core.Web.Event.Selection._disposeEvent, false);
+            } else {
+                element.style.removeProperty('WebkitTouchCallout');
+                element.style.removeProperty('WebkitUserSelect');
+                element.style.removeProperty('KhtmlUserSelect');
+                element.style.removeProperty('MozUserSelect');
+                element.style.removeProperty('MsUserSelect');
+                element.style.removeProperty('UserSelect');
             }
         }
     },
